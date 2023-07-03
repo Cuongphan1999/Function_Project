@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    .product {
+        font-size: 25px;
+        margin: 15px;
+    }
+
+    .product:nth-child(odd) {
+        background-color: rgba(167, 39, 39, 0.213);
+    }
+
+    .product .item-name {
+        width: 300px;
+    }
+
+    .product button {
+        border: none;
+        padding: 10px 15px;
+        background-color: rgb(46, 55, 173);
+        border-radius: 10px;
+        font-size: 20px;
+        margin-right: 10px;
+        cursor: pointer;
+    }
+
+    .product button:hover{
+        background-color: rgb(168, 46, 128);
+    }
+
+    #add-new-product {
+        width: 500px;
+        background-color: rgba(134, 105, 105, 0.4);
+    }
+</style>
+
+<body>
+    <form id="add-new-product">
+        <fieldset>
+            <legend>Add New Product</legend>
+            <input type="text" id="product-name" placeholder="Product Name">
+            <input type="text" id="product-price" placeholder="Product Price">
+            <input type="text" id="product-image" placeholder="Product Image">
+            <button type="button" onclick="addProduct()">ADD</button>
+        </fieldset>
+    </form>
+
+    <form id="update-product" style="display: none;">
+        <fieldset>
+            <legend>Update Product</legend>
+            <input type="text" id="update-name" placeholder="Product Name">
+            <input type="text" id="update-price" placeholder="Product Price">
+            <input type="text" id="update-image" placeholder="Product Image">
+            <button type="button" onclick="update()">Update</button>
+        </fieldset>
+    </form>
+
+    <h1>Product List</h1>
+    <table id="product-list">
+        </div>
+</body>
+
+</html>
+<script>
+    /*
+        - 4 chức năng
+        - Hiển thị danh sách sản phẩm
+        - Thêm sản phẩm
+        - Xoá sản phẩm
+        - Sửa sản phẩm
+    */
+
+    let products = loadData();
+    let currentIndex = -1;
+    
+    // let products = ["Iphone","Samsung"];
+    // let products = [
+    //     ["Iphone",14000000],
+    //     ["Samsung",2000000]
+    // ];
+
+    function displayAll() {
+        let str = "";
+        for (let i = 0; i < products.length; i++) {
+            str += `<tr class='product'>
+                        <td class="item-name"><img src=${products[i][2]} width=150px></td>
+                        <td class="item-name">${products[i][0]}</td>
+                        <td class="item-name">${products[i][1]}</td>
+                        <td><button onclick="edit(${i})">Edit</button></td>
+                        <td><button onclick="deleteProduct(${i})">Delete</button></td>
+                    </tr>`
+        }
+        document.getElementById("product-list").innerHTML = str;
+        saveData();
+    }
+
+    function addProduct() {
+        let name = document.getElementById("product-name").value;
+        let price = document.getElementById("product-price").value;
+        let image = document.getElementById("product-image").value;
+        let arr = [name, price, image]
+        products.push(arr);
+        displayAll();
+        document.getElementById("add-new-product").reset();
+        
+    }
+
+    // function editProduct(index) {
+    //     products[index][0] = prompt("Nhập tên mới", products[index][0]);
+    //     products[index][1] = prompt("Nhập giá mới", products[index][1]);
+    //     products[index][2] = prompt("Nhập ảnh mới", products[index][2]);
+    //     displayAll();
+    // }
+
+    function edit(index) {
+        document.getElementById("update-product").style.display = "block";
+        document.getElementById("update-name").value = products[index][0]
+        document.getElementById("update-price").value = products[index][1]
+        document.getElementById("update-image").value = products[index][2]
+        currentIndex = index;
+    }
+
+    function update() {
+        products[currentIndex][0] = document.getElementById("update-name").value; 
+        products[currentIndex][1] = document.getElementById("update-price").value;
+        products[currentIndex][2] = document.getElementById("update-image").value;
+        displayAll();
+        document.getElementById("update-product").reset();
+        document.getElementById("update-product").style.display = "none";
+    }
+
+    function deleteProduct(index) {
+        let check = confirm('Có chắc muốn xoá chưa?')
+        if(check){
+            products.splice(index, 1);
+            displayAll();
+        }
+    }
+
+
+
+    displayAll();
+
+    function saveData() {
+        //convert array to string
+        localStorage.setItem("products", JSON.stringify(products));
+    }
+
+    function loadData() {
+        // dữ liệu lấy ra dưới dạng string
+        if (localStorage.hasOwnProperty("products")) {
+            let data = localStorage.getItem("products");
+            //convert string to array
+            return JSON.parse(data);
+        } else {
+            return [];
+        }
+
+    }
+</script>
